@@ -1,8 +1,6 @@
 # An AWS Lambda Function to Copy S3 Objects
 
-We use this AWS Lambda function, to copy objects from the production Active Storage S3 bucket to the review app Active Storage bucket as they are added to the source bucket.
-
-## Configuration
+We use this AWS Lambda function to copy objects from the FTF production Active Storage S3 bucket to the FTF review app Active Storage bucket as each new object is added to the production bucket.
 
 ### IAM Policy and Role
 
@@ -55,13 +53,13 @@ There is also a IAM role named S3Copy with the above S3Copy policy assigned to i
 
 ### S3 Configuration
 
-The Lambda function require that a tag named `TargetBucket` be added to the source bucket, which is currently the production Active Storage bucket, with the value(s) of the buckets to copy each new object to.
+The Lambda function requires that a tag named `TargetBucket` be added to the source bucket, which is currently the production Active Storage bucket, with the value(s) of the buckets to copy each new object to.
 
 Tag Name | Required
 ---|---
 TargetBucket | Yes
 
-**TargetBucket** - A space-separated list of buckets to which the objects will be copied. Optionally, the bucket names can contain a @ character followed by a region to indicate that the bucket resides in a different region.
+The value of `TargetBucket` is a space-separated list of buckets to which the objects will be copied. Optionally, the bucket names can contain a @ character followed by a region to indicate that the bucket resides in a different region.
 
 For example: `my-target-bucket1 my-target-bucket1@us-west-2 my-target-bucket3@us-east-1`
 
@@ -89,8 +87,8 @@ Follow these steps if you need to replace our existing Lambda function or if you
 
 1. Create a new Lambda function on AWS.
 2. Upload the ZIP package to your Lambda function.
-3. Add an event source to your Lambda function:
- * Event Source Type: S3
- * Bucket: your source bucket
- * Event Type: Object Created
-4. Set your Lambda function to execute using the S3Copy IAM role (or a new one if necessary).
+3. Set your Lambda function's execution role to use an existing role, then assign it the S3Copy IAM role (or the new role you created).
+4. Add an event to the source S3 bucket:
+ * Event: All object create events
+ * Sent to: Lambda function
+ * Lambda: S3Copy (or the name of your new Lambda function)
